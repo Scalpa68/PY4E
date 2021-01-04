@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+#urllib is a package that collects several modules for working with URLs. urllib.request, urllib.parse, urllib.error
+#They are Used to make requests and to parse
+import urllib
+
+#Beautiful Soup is a Python library for pulling data out of HTML and XML files. 
+from bs4 import BeautifulSoup
+
+# This module provides regular expression matching operations similar to those found in Perl.
+import re
+
+
+#This module provides access to Transport Layer Security (often known as “Secure Sockets Layer”) encryption and peer authentication facilities for network sockets, both client-side and server-side. This module uses the OpenSSL library. It is available on all modern Unix systems, Windows, Mac OS X, and probably additional platforms, as long as OpenSSL is installed on that platform.
+import ssl
+
+#Ignore SSL certificate errors
+ctx=ssl.create_default_context()
+ctx.check_hostname=False
+ctx.verify_mode=ssl.CERT_NONE
+
+#Open the URL as a file
+url='http://py4e-data.dr-chuck.net/comments_1109276.html'
+fhand=urllib.request.urlopen(url,context=ctx).read()
+
+#Running the  document through Beautiful Soup gives us a BeautifulSoup object, which represents the document as a nested data structure:
+soup = BeautifulSoup(fhand, "html.parser")
+
+#print(soup.prettify()) To print the content of the Beautifukll Object
+#As the documents has a class called "Span", we can use the find_all to extract those lines
+tags = soup.find_all('span')
+#print(tags)
+
+#Create a list from he numbers extracted
+nums = list()
+for tag in tags:
+    #print(tag)
+    num = re.findall('[0-9]+',str(tag))
+   # print(num)
+    nums += num
+#print (nums)
+
+#Convert the list in integer and add
+numbers = [ int(x) for x in nums ]
+print(sum(numbers))
+
