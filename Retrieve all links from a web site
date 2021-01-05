@@ -1,0 +1,41 @@
+# To run this, download the BeautifulSoup zip file
+# http://www.py4e.com/code3/bs4.zip
+# and unzip it in the same directory as this file
+
+import urllib.request, urllib.parse, urllib.error
+from bs4 import BeautifulSoup
+import ssl
+
+
+# Ignore SSL certificate errors
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
+
+#Retrieve all links from a URL
+input('enter the URL:',url)
+#url = 'https://www.dr-chuck.com/'
+
+html = urllib.request.urlopen(url, context=ctx).read()
+soup = BeautifulSoup(html, 'html.parser')
+tags = soup('a')
+print ('URL: ', url, 'opened and parsed')
+print ('START CRAWLING \n')
+for tag in tags:
+    #print(tag.get('href', None))
+    new_url = tag.get('href', None)
+    print ('NEW URL', new_url)
+    while new_url :
+        print ('\tretrieving children from:',new_url)
+        try:
+            new_html = urllib.request.urlopen(new_url, context=ctx).read()
+            new_soup = BeautifulSoup(new_html, 'html.parser')
+            new_tags = soup('a')
+            for new_tag in new_tags:
+                print('\tChildren from: ', new_url, ' is' ,new_tag.get('href', None))
+                print ('\tENDLOOP')
+            break
+        except:
+            print ('\tCAN NOT OPEN', new_url)
+            new_url=''
+print ('End file')  
